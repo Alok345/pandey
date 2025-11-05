@@ -1,353 +1,776 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-        crossorigin="anonymous"></script>
-
-    <title>Document</title>
-
+    <title>Click Tracker Management System</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
     <style>
-        /* CSS for mobile carousel */
-        @media (max-width: 480px),
-        (max-width: 640px),
-        (max-width: 720px),
-        (max-width: 750px),
-        (max-width: 1080px) {
-            .desktop-cards {
-                display: none;
-                /* Hide desktop cards */
-            }
-
-            .mobile-carousel {
-                display: block;
-                /* Show mobile carousel */
-            }
-        }
-
-
-
-        /* CSS for desktop view */
-        @media (min-width: 1081px) {
-            .desktop-cards {
-                display: block;
-                /* Show desktop cards */
-            }
-
-            .mobile-carousel {
-                display: none;
-                /* Hide mobile carousel */
-            }
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
-            background-color: orange;
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
         }
-
-        .ribbon-wrapper {
-            width: 85px;
-            height: 88px;
-            overflow: hidden;
-            position: absolute;
-            top: -3px;
-            left: -3px;
-
-            .ribbon {
-                font: bold 15px sans-serif;
-                color: #333;
-                text-align: center;
-                -webkit-transform: rotate(-45deg);
-                -moz-transform: rotate(-45deg);
-                -ms-transform: rotate(-45deg);
-                -o-transform: rotate(-45deg);
-                position: relative;
-                padding: 7px 0;
-                top: 15px;
-                left: -30px;
-                width: 120px;
-                background-color: #ebb134;
-                color: #fff;
-            }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
         }
-
-        /* .carousel-indicators{
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        } */
-        .carousel-indicators [data-bs-target] {
-            box-sizing: content-box;
-            flex: 0 1 auto;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            padding: 0;
-            margin-right: 3px;
-            margin-left: 3px;
-            text-indent: -999px;
-            cursor: pointer;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            opacity: .5;
-            transition: opacity .6s ease;
-            
+        /* Style for the active nav link */
+        .nav-link.active {
+            color: #1d4ed8; /* blue-700 */
+            border-bottom: 2px solid #3b82f6; /* blue-500 */
+            font-weight: 600;
         }
-        .carousel-indicators .active{
-            opacity: 1;
+        .view-container {
+            min-height: 60vh;
         }
     </style>
 </head>
-
 <body>
 
-    <div class="container desktop-cards ">
-        <div class="row" style="height: 100vh;">
+    <!-- Firebase Configuration -->
+    <!-- Firebase Configuration -->
+<script>
+// ✅ USE YOUR REAL FIREBASE CONFIG FROM YOUR PROJECT
+const __firebase_config = JSON.stringify({
+    apiKey: "AIzaSyBqNH0Z4nkA8Rk1-bAo3Vk0OTIyrXcbIyg",
+    authDomain: "trackier-85ecd.firebaseapp.com",
+    projectId: "trackier-85ecd",
+    storageBucket: "trackier-85ecd.firebasestorage.app",
+    messagingSenderId: "99958353445",
+    appId: "1:99958353445:web:0138af7a28fd1034ce19cc",
+    measurementId: "G-HYY5P0K3GK"
+});
 
-            <div class="col-md-3">
-                <div class="card mb-3" style="height: 100vh;">
+const __app_id = "click-tracker-app-v1";
+const __initial_auth_token = null;
+</script>
 
-                    <div class="ribbon-wrapper">
-                        <div class="ribbon">NEW</div>
-                    </div>
+    <!-- Click Tracker Mode Display (CRITICAL: Active only during a real click) -->
+    <div id="tracker-mode-display" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center p-8 z-50">
+        <svg class="animate-spin h-10 w-10 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p id="trackerStatus" class="text-xl font-semibold text-gray-700">Logging Click and Redirecting...</p>
+        <p class="text-sm text-gray-500 mt-2">Guaranteeing log delivery before navigation. If this takes too long, a server-side solution is necessary.</p>
+    </div>
 
-                    <!-- <h5 class="card-title text-center"></h5> -->
-                    <div class="card-header text-center mx-5 my-3">
-                        <h5>Private Limited <br> Company</h5>
-                    </div>
-                    <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                        <div class="card-body text-center ">
-                            <h6 class="card-subtitle mb-2 ">Starting</h6>
-                            <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                            <h6 style="color:blue;">+ Govt Fees</h6>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">The default option for startups and growing businesses as only private
-                            Imited companies can raise venture capital. This type of company offers imited liability for
-                            the shareholders with certain restrictions placed on the ownership Private labe company
-                            registration, decors may be different from shareholders.</p>
-                        <h6 class="card-text text-center" style="color:blue;">Know More</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card mb-3" style="height: 100vh;">
-                    <!-- <h5 class="card-title text-center"></h5> -->
-                    <div class="card-header text-center mx-5 my-3">
-                        <h5>Limited Liability <br> PatnerShips</h5>
-                    </div>
-                    <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                        <div class="card-body text-center ">
-                            <h6 class="card-subtitle mb-2 ">Starting</h6>
-                            <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                            <h6 style="color:blue;">+ Statutory Fees</h6>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">LLP was introduced to provide a form of business that is easy to maintain
-                            and to help owners by providing them with limited ability Limited Liability Partnership
-                            Registration combines the benefits of a partnership with that of a mited by company.</p>
-                        <h6 class="card-text text-center pt-5" style="color:blue;">Know More</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card mb-3" style="height: 100vh;">
-                    <!-- <h5 class="card-title text-center"></h5> -->
-                    <div class="card-header text-center mx-5 my-3">
-                        <h5>One Person <br> Company</h5>
-                    </div>
-                    <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                        <div class="card-body text-center ">
-                            <h6 class="card-subtitle mb-2 ">Starting</h6>
-                            <h1 class="card-text "> <sup>&#8377;</sup>5998</h1>
-                            <h6 style="color:blue;">+ All Inclusive</h6>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">The best structure for solo entrepreneurs looking beyond the opportunities
-                            a sole proprietorship affords, Here, a single promoter gains ful authority over the company,
-                            restricting hisher by towards their contributions to the enterprise. The said person will be
-                            the sole shareholder and director.</p>
-                        <h6 class="card-text text-center" style="color:blue;">Know More</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 h-100">
-                <div class="card mb-3" style="height: 100vh;">
-                    <!-- <h5 class="card-title text-center"></h5> -->
-                    <div class="card-header text-center mx-5 my-3">
-                        <h5>PatnerShips <br> Firm</h5>
-                    </div>
-                    <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                        <div class="card-body text-center ">
-                            <h6 class="card-subtitle mb-2 ">Starting</h6>
-                            <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                            <h6 style="color:blue;">+ Statutory Fees</h6>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">A business structure in which two or more individuals manage a business per
-                            the terms in Pishership Deed. It's best suitable for home businesses that are un key to take
-                            any debt due to low cost ease of setting up and minimal compliance requirements.</p>
-                        <h6 class="card-text text-center pt-5" style="color:blue;">Know More</h6>
-                    </div>
-                </div>
+
+    <!-- Main Application Container (Admin Interface) -->
+    <div id="admin-interface" class="max-w-6xl mx-auto p-4 sm:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-800">TCT Dashboard <span class="text-xl text-gray-400">| v1.0</span></h1>
+            <p class="text-gray-600 mt-2">Campaign & Link Management</p>
+            <p class="text-xs text-gray-500 mt-1">Logged in as: <code id="userIdDisplay" class="font-mono bg-yellow-100 p-1 rounded">Loading...</code></p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button id="navCampaigns" onclick="switchView('campaigns')" class="nav-link px-4 py-2 text-gray-600 transition duration-150">Campaigns</button>
+            <button id="navGenerator" onclick="switchView('generator')" class="nav-link px-4 py-2 text-gray-600 transition duration-150">Generate Link</button>
+            <button id="navReports" onclick="switchView('reports')" class="nav-link px-4 py-2 text-gray-600 transition duration-150">Reports</button>
+        </nav>
+
+
+        <!-- VIEWS -->
+
+        <!-- 1. Campaigns View -->
+        <div id="campaignsView" class="view-container">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-700">Manage Campaigns & Domains</h2>
+                <button onclick="showCreateCampaignModal()" class="bg-blue-600 text-white p-2 rounded-lg font-bold hover:bg-blue-700 transition duration-150 text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    New Campaign
+                </button>
             </div>
 
+            <div id="campaignList" class="space-y-4">
+                <p class="text-center text-gray-500 p-4 card bg-white rounded-xl">No campaigns found. Create one to get started.</p>
+            </div>
+        </div>
 
-            <!-- Add more desktop cards here -->
+        <!-- 2. Link Generator View -->
+        <div id="generatorView" class="view-container hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-700">Generate Tracking Link</h2>
+
+            <div class="card bg-white p-6 rounded-xl">
+                <label for="campaignSelect" class="block text-sm font-medium text-gray-500 mb-2">1. Select Campaign (and Tracking Domain)</label>
+                <select id="campaignSelect" onchange="updateLinkPreview()" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4">
+                    <option value="">-- Select a Campaign --</option>
+                </select>
+
+                <label for="destinationUrl" class="block text-sm font-medium text-gray-500 mb-2">2. Final Destination URL</label>
+                <input type="url" id="destinationUrl" 
+                       value="https://www.example.com/offer?target=true" 
+                       placeholder="e.g., yourlandingpage.com/offer?gclid=..."
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4"
+                       oninput="updateLinkPreview()">
+
+                <p class="block text-sm font-medium text-gray-500 mb-2">3. Simulate Click ID Parameter (Optional)</p>
+                <div class="flex space-x-2 mb-6">
+                    <input type="text" id="customParamName" value="custom_click_id" placeholder="Parameter Name (e.g., click_id)"
+                           class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" oninput="updateLinkPreview()">
+                    <input type="text" id="customParamValue" value="AB123XYZ" placeholder="Parameter Value (e.g., 12345)"
+                           class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" oninput="updateLinkPreview()">
+                </div>
+                
+                <button onclick="generateLink()" class="w-full bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700 transition duration-150">
+                    Generate Certified Tracking Link
+                </button>
+
+                <!-- Generated Link Output -->
+                <div id="generatedLinkOutput" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-xl hidden">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">
+                        Tracking URL (Copy and use this in your ad platform):
+                        <button onclick="copyActualUrl()" class="ml-2 px-2 py-1 bg-yellow-400 text-gray-800 text-xs font-medium rounded-full hover:bg-yellow-500 transition">
+                            Copy Link
+                        </button>
+                    </p>
+                    <code id="actualTrackingUrlCode" class="block bg-red-50 p-3 rounded-lg text-sm break-all text-red-700 border border-red-200"></code>
+                    <p class="text-xs mt-2 text-gray-500 font-medium">
+                        **NOTE:** The `redirect_url` parameter contains the entire destination URL, including placeholders like `{gclid}`.
+                    </p>
+                </div>
+
+                <div id="testButtonContainer">
+                    <!-- Test Button for in-page simulation -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Reports View -->
+        <div id="reportsView" class="view-container hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-700">Real-Time Click Report</h2>
+            
+            <div class="flex space-x-4 mb-6">
+                <div class="card bg-white p-4 rounded-xl flex-1 text-center">
+                    <p class="text-sm font-medium text-gray-500">Total Clicks (All Time)</p>
+                    <p id="totalClicksCount" class="text-3xl font-bold text-blue-600 mt-1">0</p>
+                </div>
+                <div class="card bg-white p-4 rounded-xl flex-1 text-center">
+                    <p class="text-sm font-medium text-gray-500">Unique Click IDs Logged</p>
+                    <p id="uniqueClicksCount" class="text-3xl font-bold text-green-600 mt-1">0</p>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Latest Clicks (Live Feed)</h3>
+            <div id="clickLog" class="space-y-3 p-4 bg-white rounded-xl border border-gray-200" style="max-height: 500px; overflow-y: auto;">
+                <p id="loadingMessage" class="text-center text-gray-500 p-4">Loading real-time click data...</p>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- MODALS -->
+
+    <!-- Create/Edit Campaign Modal -->
+    <div id="campaignModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-lg w-full">
+            <h3 id="campaignModalTitle" class="text-xl font-bold text-gray-700 mb-4">Create New Campaign</h3>
+            <p class="text-sm text-red-500 mb-4">**CRITICAL:** The Tracking Domain must be a real domain (e.g., trk.mycompany.com) that points to this hosted file.</p>
+            
+            <label for="campaignName" class="block text-sm font-medium text-gray-500 mb-2">Campaign Name</label>
+            <input type="text" id="campaignName" placeholder="e.g., Q4 Google Ads" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4">
+
+            <label for="trackingDomain" class="block text-sm font-medium text-gray-500 mb-2">Tracking Domain (Must be a real domain!)</label>
+            <input type="text" id="trackingDomain" value="trk.yourcompany.com" placeholder="e.g., trk.mycompany.com" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-6">
+
+            <input type="hidden" id="campaignId">
+
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeCampaignModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                <button onclick="saveCampaign()" id="saveCampaignButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Campaign</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Message/Alert Modal Container -->
+    <div id="messageBox" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
+            <p id="messageText" class="text-gray-700 font-medium mb-4">Message content.</p>
+            <button onclick="closeMessageBox()" class="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">Close</button>
         </div>
     </div>
 
-    <div id="mobile-carousel" class="carousel slide mobile-carousel py-4 " data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#mobile-carousel" data-bs-slide-to="0" class="active"
-                aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#mobile-carousel" data-bs-slide-to="1"
-                aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#mobile-carousel" data-bs-slide-to="2"
-                aria-label="Slide 3"></button>
-            <button type="button" data-bs-target="#mobile-carousel" data-bs-slide-to="3"
-                aria-label="Slide 4"></button>
-        </div>
-        <div class="carousel-inner ">
-            <div class="carousel-item active">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card mb-3 " style="height: 60vh;">
-                                <div class="ribbon-wrapper">
-                                    <div class="ribbon">NEW</div>
-                                </div>
-                                <h5 class="card-title text-center">Private Limited <br> Company</h5>
-                                <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                                    <div class="card-body text-center ">
-                                        <h6 class="card-subtitle mb-2 ">Starting</h6>
-                                        <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                                        <h6 style="color:blue;">+ Govt Fees</h6>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">The default option for startups and growing businesses as only
-                                        private
-                                        Imited companies can raise venture capital. This type of company offers imited
-                                        liability for
-                                        the shareholders with certain restrictions placed on the ownership Private labe
-                                        company
-                                        registration, decors may be different from shareholders.</p>
-                                    <h6 class="card-text text-center" style="color:blue;">Know More</h6>
-                                </div>
-                            </div>
-                        </div>
+
+    <!-- Firebase/Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, serverTimestamp, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // setLogLevel('Debug'); // Uncomment for debugging
+
+        // --- GLOBAL SETUP (Mandatory for Canvas Environment) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, analytics, userId = null;
+        let campaigns = [];
+        let currentView = 'campaigns';
+
+        // --- CORE PATHS ---
+        const getCampaignsCollection = () => collection(db, 'artifacts', appId, 'users', userId, 'campaigns');
+        const getClicksCollection = () => collection(db, 'artifacts', appId, 'public', 'data', 'clicks');
+
+        // --- VIEW MANAGEMENT ---
+
+        /**
+         * Switches the active view in the dashboard.
+         * @param {string} viewName 'campaigns', 'generator', or 'reports'.
+         */
+        window.switchView = function(viewName) {
+            currentView = viewName;
+            ['campaigns', 'generator', 'reports'].forEach(v => {
+                const view = document.getElementById(v + 'View');
+                if (view) view.classList.toggle('hidden', v !== viewName);
+                
+                const nav = document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1));
+                if (nav) nav.classList.toggle('active', v === viewName);
+            });
+
+            // Run specific renderer for the new view
+            if (viewName === 'campaigns') renderCampaignsView();
+            else if (viewName === 'generator') renderLinkGeneratorView();
+            else if (viewName === 'reports') renderReportsView();
+        };
+
+        // --- FIREBASE INITIALIZATION ---
+        async function initializeFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    // Show admin interface but disable DB features
+                    document.getElementById('admin-interface').classList.remove('hidden');
+                    showMessageBox("Error", "Firebase configuration is missing. Data saving features are disabled.");
+                    return;
+                }
+
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                analytics = getAnalytics(app);
+                
+                // Determine if we are in click-tracking mode based on URL
+                const params = new URLSearchParams(window.location.search);
+                const redirectTarget = params.get('redirect_url');
+
+                if (redirectTarget) {
+                    // CRITICAL: We are a tracking endpoint, hide admin interface immediately
+                    document.getElementById('admin-interface').style.display = 'none';
+                    document.getElementById('tracker-mode-display').classList.remove('hidden');
+                    document.getElementById('tracker-mode-display').classList.add('flex');
+                } else {
+                    // Admin mode: Show admin interface
+                    document.getElementById('admin-interface').classList.remove('hidden');
+                }
+                
+                // Authenticate and set up auth listener
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('userIdDisplay').textContent = userId.substring(0, 10) + '...';
+
+                        if (redirectTarget) {
+                            // Real click: handle logging and redirect
+                            handleTrackerClick(decodeURIComponent(redirectTarget));
+                        } else {
+                            // Admin mode: Load initial data and listeners
+                            setupCampaignListener();
+                            setupReportListener();
+                            switchView('campaigns'); // Start on the campaigns view
+                        }
+                    } else {
+                        // Anonymous fallback if dedicated sign-in fails
+                        userId = crypto.randomUUID(); 
+                        document.getElementById('userIdDisplay').textContent = 'ANON-' + userId.substring(0, 8) + '...';
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization/Auth Error:", error);
+                showMessageBox("Initialization Error", "Failed to start the application. Check console for details.");
+            }
+        }
+
+        // --- CAMPAIGN MANAGEMENT LOGIC ---
+
+        /**
+         * Sets up the real-time listener for the user's campaigns.
+         */
+        function setupCampaignListener() {
+            if (!db || !userId) return;
+
+            onSnapshot(getCampaignsCollection(), (snapshot) => {
+                campaigns = [];
+                snapshot.forEach(doc => {
+                    campaigns.push({ id: doc.id, ...doc.data() });
+                });
+                console.log(`Loaded ${campaigns.length} campaigns.`);
+                
+                // Re-render the relevant views
+                if (currentView === 'campaigns') renderCampaignsView();
+                if (currentView === 'generator') renderLinkGeneratorView();
+            }, (error) => {
+                console.error("Error setting up campaign listener:", error);
+            });
+        }
+
+        /**
+         * Renders the list of campaigns in the Campaigns View.
+         */
+        function renderCampaignsView() {
+            const list = document.getElementById('campaignList');
+            if (!list) return;
+            
+            list.innerHTML = '';
+
+            if (campaigns.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-500 p-4 card bg-white rounded-xl">No campaigns found. Create one to get started.</p>';
+                return;
+            }
+
+            campaigns.forEach(campaign => {
+                const item = document.createElement('div');
+                item.className = 'p-4 bg-white rounded-xl border border-gray-200 flex justify-between items-center';
+                item.innerHTML = `
+                    <div>
+                        <p class="text-lg font-semibold text-gray-800">${campaign.name}</p>
+                        <p class="text-sm text-gray-500">Domain: <code class="bg-gray-100 p-1 rounded text-blue-600">${campaign.trackingDomain}</code></p>
                     </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card mb-3  " style="height: 60vh;">
-                                <div class="card-header text-center mx-5 my-3">
-                                    <h5>Limited Liability <br> PatnerShips</h5>
-                                </div>
-                                <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                                    <div class="card-body text-center ">
-                                        <h6 class="card-subtitle mb-2 ">Starting</h6>
-                                        <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                                        <h6 style="color:blue;">+ Statutory Fees</h6>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">LLP was introduced to provide a form of business that is easy
-                                        to maintain
-                                        and to help owners by providing them with limited ability Limited Liability
-                                        Partnership
-                                        Registration combines the benefits of a partnership with that of a mited by
-                                        company.</p>
-                                    <h6 class="card-text text-center pt-3" style="color:blue;">Know More</h6>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="flex space-x-2">
+                        <button onclick="editCampaign('${campaign.id}')" class="text-sm text-blue-600 hover:text-blue-800 transition">Edit</button>
+                        <button onclick="deleteCampaign('${campaign.id}')" class="text-sm text-red-600 hover:text-red-800 transition">Delete</button>
                     </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card mb-3" style="height: 60vh;">
-                                <div class="card-header text-center mx-5 my-3">
-                                    <h5>One Person <br> Company</h5>
-                                </div>
-                                <div class="card mx-5 my-2  " style="background-color: whitesmoke;">
-                                    <div class="card-body text-center ">
-                                        <h6 class="card-subtitle mb-2 ">Starting</h6>
-                                        <h1 class="card-text "> <sup>&#8377;</sup>5998</h1>
-                                        <h6 style="color:blue;">+ All Inclusive</h6>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">The best structure for solo entrepreneurs looking beyond the
-                                        opportunities
-                                        a sole proprietorship affords, Here, a single promoter gains ful authority over
-                                        the company,
-                                        restricting hisher by towards their contributions to the enterprise. The said
-                                        person will be
-                                        the sole shareholder and director.</p>
-                                    <h6 class="card-text text-center pt-1" style="color:blue;">Know More</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card mb-3" style="height: 60vh;">
-                                <div class="card-header text-center mx-5 my-3">
-                                    <h5>PatnerShips <br> Firm</h5>
-                                </div>
-                                <div class="card mx-5 my-3  " style="background-color: whitesmoke;">
-                                    <div class="card-body text-center ">
-                                        <h6 class="card-subtitle mb-2 ">Starting</h6>
-                                        <h1 class="card-text "> <sup>&#8377;</sup>999</h1>
-                                        <h6 style="color:blue;">+ Statutory Fees</h6>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">A business structure in which two or more individuals manage a
-                                        business per
-                                        the terms in Pishership Deed. It's best suitable for home businesses that are un
-                                        key to take
-                                        any debt due to low cost ease of setting up and minimal compliance requirements.
-                                    </p>
-                                    <h6 class="card-text text-center pt-3" style="color:blue;">Know More</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Add more mobile carousel items for additional cards -->
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
-        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
-        crossorigin="anonymous"></script>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        /**
+         * Shows the modal for creating a new campaign.
+         */
+        window.showCreateCampaignModal = function() {
+            document.getElementById('campaignModalTitle').textContent = "Create New Campaign";
+            document.getElementById('campaignName').value = '';
+            document.getElementById('trackingDomain').value = 'trk.yourcompany.com';
+            document.getElementById('campaignId').value = '';
+            document.getElementById('campaignModal').classList.remove('hidden');
+            document.getElementById('campaignModal').classList.add('flex');
+        }
+
+        /**
+         * Edits an existing campaign.
+         */
+        window.editCampaign = function(id) {
+            const campaign = campaigns.find(c => c.id === id);
+            if (!campaign) return;
+
+            document.getElementById('campaignModalTitle').textContent = `Edit Campaign: ${campaign.name}`;
+            document.getElementById('campaignName').value = campaign.name;
+            document.getElementById('trackingDomain').value = campaign.trackingDomain;
+            document.getElementById('campaignId').value = id;
+            document.getElementById('campaignModal').classList.remove('hidden');
+            document.getElementById('campaignModal').classList.add('flex');
+        }
+
+        /**
+         * Closes the campaign modal.
+         */
+        window.closeCampaignModal = function() {
+            document.getElementById('campaignModal').classList.add('hidden');
+            document.getElementById('campaignModal').classList.remove('flex');
+        }
+
+        /**
+         * Saves or updates a campaign to Firestore.
+         */
+        window.saveCampaign = async function() {
+            const name = document.getElementById('campaignName').value.trim();
+            let domain = document.getElementById('trackingDomain').value.trim();
+            const id = document.getElementById('campaignId').value;
+            
+            if (!name || !domain) {
+                showMessageBox("Input Required", "Campaign Name and Tracking Domain are required.");
+                return;
+            }
+
+            // Simple domain normalization: remove protocol if present
+            domain = domain.replace(/^(https?:\/\/)/i, '');
+
+            const campaignData = {
+                name: name,
+                trackingDomain: domain,
+                updatedAt: serverTimestamp()
+            };
+
+            const campaignRef = id 
+                ? doc(db, 'artifacts', appId, 'users', userId, 'campaigns', id)
+                : doc(getCampaignsCollection()); // Firestore generates ID for new doc
+
+            try {
+                await setDoc(campaignRef, campaignData, { merge: true });
+                closeCampaignModal();
+                showMessageBox("Success", `Campaign "${name}" saved successfully.`);
+            } catch (error) {
+                console.error("Error saving campaign:", error);
+                showMessageBox("Error", "Failed to save campaign. Check console for details.");
+            }
+        }
+        
+        /**
+         * Deletes a campaign from Firestore.
+         */
+        window.deleteCampaign = async function(id) {
+            if (!confirm(`Are you sure you want to delete this campaign?`)) return;
+
+            try {
+                const campaignRef = doc(db, 'artifacts', appId, 'users', userId, 'campaigns', id);
+                await deleteDoc(campaignRef);
+                showMessageBox("Deleted", "Campaign deleted successfully.");
+            } catch (error) {
+                console.error("Error deleting campaign:", error);
+                showMessageBox("Error", "Failed to delete campaign.");
+            }
+        }
+
+
+        // --- LINK GENERATOR LOGIC ---
+
+        /**
+         * Renders the Link Generator view, populating the campaign dropdown.
+         */
+        function renderLinkGeneratorView() {
+            const select = document.getElementById('campaignSelect');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Select a Campaign --</option>';
+
+            if (campaigns.length === 0) {
+                select.innerHTML += '<option disabled>No campaigns found. Create one first.</option>';
+                // Hide the generator section if no campaigns
+                document.getElementById('generatedLinkOutput').classList.add('hidden');
+                document.getElementById('testButtonContainer').innerHTML = '';
+                return;
+            }
+
+            campaigns.forEach(campaign => {
+                const option = document.createElement('option');
+                option.value = campaign.trackingDomain;
+                option.textContent = `${campaign.name} (${campaign.trackingDomain})`;
+                select.appendChild(option);
+            });
+            
+            // Auto-select the first campaign if available
+            if (select.options.length > 1) {
+                select.selectedIndex = 1;
+            }
+
+            updateLinkPreview();
+        }
+
+        /**
+         * Updates the link preview based on current inputs without generating the final link.
+         */
+        window.updateLinkPreview = function() {
+            const domain = document.getElementById('campaignSelect').value;
+            const destUrl = document.getElementById('destinationUrl').value.trim();
+            const paramName = document.getElementById('customParamName').value.trim() || 'custom_click_id';
+            const paramValue = document.getElementById('customParamValue').value.trim() || 'CLICKID_MACRO';
+            
+            const generatedOutput = document.getElementById('generatedLinkOutput');
+            const actualTrackingUrlCodeElement = document.getElementById('actualTrackingUrlCode');
+            const testButtonContainer = document.getElementById('testButtonContainer');
+
+            if (!domain || !destUrl) {
+                generatedOutput.classList.add('hidden');
+                testButtonContainer.innerHTML = '';
+                actualTrackingUrlCodeElement.textContent = 'Please select a campaign and enter a destination URL.';
+                return;
+            }
+
+            // 1. Prepare Destination URL (Append macro for click ID)
+            const separator = destUrl.includes('?') ? '&' : '?';
+            const finalDestination = `${destUrl}${separator}${paramName}=${paramValue}&gclid={gclid}`;
+
+            // 2. Construct the full tracking URL (Simulating the hosted domain)
+            const encodedUrl = encodeURIComponent(finalDestination);
+            const trackingUrl = `https://${domain}/?redirect_url=${encodedUrl}`;
+            
+            // Store the tracking URL globally for the final step
+            window.actualTrackingUrl = trackingUrl;
+
+            actualTrackingUrlCodeElement.textContent = trackingUrl;
+            generatedOutput.classList.remove('hidden');
+            
+            // Update the in-page test button
+            const escapedTrackingUrl = trackingUrl.replace(/'/g, "\\'"); 
+            testButtonContainer.innerHTML = `
+                <button onclick="handleTestClick('${escapedTrackingUrl}')" 
+                        class="w-full mt-3 bg-blue-600 text-white p-2 rounded-lg font-bold hover:bg-blue-700 transition duration-150">
+                    TEST CLICK (Simulate Log & Redirect within current page)
+                </button>
+            `;
+        }
+
+        /**
+         * Finalizes the link generation (mostly calls updateLinkPreview and shows message)
+         */
+        window.generateLink = function() {
+            updateLinkPreview();
+            if (window.actualTrackingUrl) {
+                showMessageBox("Link Generated", "The tracking link has been updated below. Copy the full link from the red box and use it in your ad platform.");
+            }
+        }
+        
+        /**
+         * Copies the globally stored actualTrackingUrl to the clipboard.
+         */
+        window.copyActualUrl = function() {
+            if (!window.actualTrackingUrl) {
+                showMessageBox("Copy Error", "Please generate the link first.");
+                return;
+            }
+            try {
+                const tempTextArea = document.createElement("textarea");
+                tempTextArea.value = window.actualTrackingUrl;
+                tempTextArea.style.position = "fixed"; 
+                tempTextArea.style.opacity = "0"; 
+                document.body.appendChild(tempTextArea);
+                
+                tempTextArea.focus();
+                tempTextArea.select();
+                
+                document.execCommand('copy');
+                
+                document.body.removeChild(tempTextArea);
+                
+                showMessageBox("Copied!", "The **Tracking URL** has been copied to your clipboard.");
+            } catch (err) {
+                showMessageBox("Copy Error", "Failed to copy the link. Please manually select the URL and copy it.");
+                console.error('Manual fallback to execCommand failed:', err);
+            }
+        }
+
+        /**
+         * Handles the simulated test click, isolating the logging process from navigation.
+         */
+        window.handleTestClick = function(trackingUrl) {
+            const urlObj = new URL(trackingUrl);
+            const encodedRedirectUrl = urlObj.searchParams.get('redirect_url');
+            
+            if (!encodedRedirectUrl) {
+                showMessageBox("Error", "Could not parse redirect URL from the tracking link.");
+                return;
+            }
+
+            // 1. Display the loading state (mimicking the redirect page)
+            const adminInterface = document.getElementById('admin-interface');
+            const trackerModeDisplay = document.getElementById('tracker-mode-display');
+            adminInterface.style.display = 'none'; // Hide admin
+            trackerModeDisplay.classList.remove('hidden');
+            trackerModeDisplay.classList.add('flex');
+            document.getElementById('trackerStatus').textContent = "Simulating Click... Log will appear shortly.";
+
+
+            // 2. Call the logger with the 'isTest' flag set to true, using the actual parameters
+            const destUrl = document.getElementById('destinationUrl').value.trim();
+            const paramName = document.getElementById('customParamName').value.trim() || 'custom_click_id';
+
+            handleTrackerClick(decodeURIComponent(encodedRedirectUrl), true, paramName);
+        }
+
+        // --- CORE TRACKER LOGIC (Runs on the actual click) ---
+
+        /**
+         * Logs the click to Firestore and performs the final transparent redirect or ends the test.
+         * @param {string} redirectUrl The decoded URL to redirect to.
+         * @param {boolean} isTest If true, skips the final window.location.replace and cleans up UI.
+         * @param {string} customParamName The expected name of the custom click ID parameter.
+         */
+        async function handleTrackerClick(redirectUrl, isTest = false, customParamName = 'custom_click_id') {
+            console.log(`Attempting to handle click and log (Test: ${isTest}). Redirect URL: ${redirectUrl}`);
+            
+            const trackerStatus = document.getElementById('trackerStatus');
+            if (trackerStatus) {
+                trackerStatus.textContent = "Click Detected. Logging Data...";
+            }
+
+            if (!db || !userId) {
+                console.error("Database or User not ready for logging. Proceeding with redirect.");
+                if (!isTest) window.location.replace(redirectUrl);
+                return;
+            }
+
+            // 1. Extract Click IDs from the final URL
+            const finalUrl = new URL(redirectUrl);
+            const gclid = finalUrl.searchParams.get('gclid') || 'N/A';
+            const extractedCustomClickId = finalUrl.searchParams.get(customParamName) || 'N/A';
+            
+            // Clean up destination URL (remove macros/placeholders like {gclid})
+            const cleanedRedirectUrl = redirectUrl.replace(/(\{[^}]+\})/g, '<<MACRO>>');
+
+            const clickData = {
+                timestamp: serverTimestamp(),
+                userId: userId, // User ID of the tracking system owner
+                redirectUrl: cleanedRedirectUrl, // Cleaned URL
+                gclid: gclid,
+                customClickId: extractedCustomClickId,
+                referrer: document.referrer || 'N/A',
+                userAgent: navigator.userAgent || 'N/A',
+                logType: isTest ? 'TCT-Test-Click' : 'TCT-Live-Click',
+                trackingDomain: window.location.hostname
+            };
+
+            try {
+                // 1. Log to Firestore (Primary Log)
+                await addDoc(getClicksCollection(), clickData); 
+                
+                // 2. Log to Analytics (Secondary Log)
+                if (analytics) {
+                    logEvent(analytics, 'tracking_link_redirect', {
+                        log_type: clickData.logType,
+                        gclid_present: clickData.gclid !== 'N/A',
+                        custom_id_present: clickData.customClickId !== 'N/A',
+                        tracking_domain: clickData.trackingDomain,
+                        redirect_target: cleanedRedirectUrl.substring(0, 100) // Truncate for safety
+                    });
+                }
+                
+                if (trackerStatus) {
+                    trackerStatus.textContent = "Log Success! Waiting for commit...";
+                }
+                
+                console.log("Click logged successfully to Firestore and Analytics.");
+
+            } catch (error) {
+                console.error("Critical Error logging click:", error);
+            }
+
+            // 2. Add Mandatory Delay before Redirect/Ending Test
+            // CRITICAL: This delay gives the browser time to commit the network request before the page context is destroyed.
+            await new Promise(resolve => setTimeout(resolve, isTest ? 1000 : 300)); // Increased to 300ms for production robustness
+            
+            // Final Action: Redirect or End Test
+            if (!isTest) {
+                if (trackerStatus) {
+                    trackerStatus.textContent = "Finalizing Redirect...";
+                }
+                // Transparent Redirect
+                console.log("Redirecting now...");
+                window.location.replace(redirectUrl);
+            } else {
+                
+                // End Test
+                document.getElementById('tracker-mode-display').classList.remove('flex');
+                document.getElementById('tracker-mode-display').classList.add('hidden');
+                document.getElementById('admin-interface').style.display = 'block'; // Show admin UI again
+                switchView('reports'); // Show the reports tab automatically
+                showMessageBox("Test Click Logged", "The click was logged successfully! The Reports view now reflects this data, including the Click ID.");
+            }
+        }
+
+
+        // --- REPORTING LOGIC ---
+
+        /**
+         * Sets up the real-time listener for the public click log.
+         */
+        function setupReportListener() {
+            if (!db) return;
+
+            onSnapshot(getClicksCollection(), (snapshot) => {
+                const clicks = [];
+                const clickIds = new Set();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    clicks.push({ id: doc.id, ...data });
+                    if (data.gclid && data.gclid !== 'N/A') clickIds.add(data.gclid);
+                    if (data.customClickId && data.customClickId !== 'N/A') clickIds.add(data.customClickId);
+                });
+                
+                // Update summary statistics
+                document.getElementById('totalClicksCount').textContent = clicks.length.toLocaleString();
+                document.getElementById('uniqueClicksCount').textContent = clickIds.size.toLocaleString();
+
+                // Sort by timestamp descending
+                clicks.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                renderClickLog(clicks);
+
+            }, (error) => {
+                console.error("Error setting up click log listener:", error);
+                document.getElementById('clickLog').innerHTML = `<p class="text-center text-red-500 p-4">Error loading clicks: ${error.message}</p>`;
+            });
+        }
+        
+        /**
+         * Renders the click data into the log list.
+         */
+        function renderClickLog(clicks) {
+            const logElement = document.getElementById('clickLog');
+            if (!logElement) return;
+
+            logElement.innerHTML = '';
+
+            if (clicks.length === 0) {
+                logElement.innerHTML = '<p class="text-center text-gray-400 p-4">No clicks recorded yet. Generate a link and click it!</p>';
+                return;
+            }
+
+            clicks.forEach(click => {
+                const time = click.timestamp?.toDate ? click.timestamp.toDate().toLocaleTimeString() : 'N/A';
+                const date = click.timestamp?.toDate ? click.timestamp.toDate().toLocaleDateString() : 'N/A';
+                const logItem = document.createElement('div');
+                logItem.className = 'p-3 bg-gray-50 rounded-lg border border-blue-100 transition duration-100 hover:bg-blue-100';
+                
+                let clickIdDisplay = '';
+                if (click.gclid && click.gclid !== 'N/A') {
+                    clickIdDisplay += `<p class="text-xs text-gray-500">GCLID: <span class="font-mono text-xs text-green-600">${click.gclid.substring(0, 15)}...</span></p>`;
+                }
+                if (click.customClickId && click.customClickId !== 'N/A') {
+                    clickIdDisplay += `<p class="text-xs text-gray-500">Custom ID: <span class="font-mono text-xs text-purple-600">${click.customClickId}</span></p>`;
+                }
+
+                logItem.innerHTML = `
+                    <p class="text-sm font-semibold text-gray-700">Click Logged (${date} at ${time})</p>
+                    <p class="text-xs text-gray-500">Domain: <span class="font-mono text-xs text-gray-600">${click.trackingDomain}</span></p>
+                    ${clickIdDisplay}
+                    <p class="text-xs text-gray-500 truncate">Destination: <span class="font-mono text-blue-600">${click.redirectUrl}</span></p>
+                `;
+                logElement.appendChild(logItem);
+            });
+        }
+
+
+        // --- UTILITY: Message Box ---
+        window.showMessageBox = function(title, message) {
+            const messageBox = document.getElementById('messageBox');
+            document.getElementById('messageText').innerHTML = `<strong>${title}:</strong> ${message}`;
+            messageBox.classList.remove('hidden');
+            messageBox.classList.add('flex');
+        }
+
+        window.closeMessageBox = function() {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.classList.add('hidden');
+            messageBox.classList.remove('flex');
+        }
+
+
+        // --- Start the App ---
+        document.getElementById('admin-interface').classList.add('hidden'); // Hide admin until auth is ready
+        window.onload = initializeFirebase;
+    </script>
 </body>
-
 </html>
